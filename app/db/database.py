@@ -5,7 +5,7 @@ from pymongo.errors import ConnectionFailure
 
 from app.config.config import settings
 
-# Global database client
+# Global database client and db
 client = None
 db = None
 
@@ -37,3 +37,11 @@ async def close_mongodb_connection():
     if client:
         client.close()
         logging.info("MongoDB connection closed")
+
+# Export the database object
+def get_db():
+    """Get the database connection"""
+    global db
+    if db is None:
+        raise ValueError("Database connection not initialized")
+    return db

@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
+import traceback
 
 class AnalyticsService:
     """Simplified service for analyzing fraud transaction data"""
@@ -16,6 +17,12 @@ class AnalyticsService:
             Dictionary with fraud summary statistics
         """
         try:
+            if db is None:
+                return {
+                    "success": False,
+                    "error": "Database connection is not initialized"
+                }
+                
             # Get total transactions
             total_count = await db.transactions.count_documents({})
             
@@ -47,6 +54,7 @@ class AnalyticsService:
             }
         except Exception as e:
             logging.error(f"Error getting fraud summary: {str(e)}")
+            logging.error(traceback.format_exc())
             return {
                 "success": False,
                 "error": str(e)
@@ -63,6 +71,12 @@ class AnalyticsService:
             Dictionary with category-based fraud statistics
         """
         try:
+            if db is None:
+                return {
+                    "success": False,
+                    "error": "Database connection is not initialized"
+                }
+                
             # Get total fraud count
             total_fraud = await db.transactions.count_documents({"is_fraud": True})
             
@@ -112,6 +126,7 @@ class AnalyticsService:
             }
         except Exception as e:
             logging.error(f"Error getting fraud by category: {str(e)}")
+            logging.error(traceback.format_exc())
             return {
                 "success": False,
                 "error": str(e)

@@ -4,7 +4,7 @@ import uvicorn
 import logging
 
 from app.db.database import connect_to_mongodb, close_mongodb_connection
-from app.routers import analytics_routes
+from app.routers import analytics_routers
 from app.config.config import settings
 
 # Configure logging
@@ -32,13 +32,17 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(analytics_routes.router)
+app.include_router(analytics_routers.router)
 
 @app.on_event("startup")
 async def startup_event():
     """Connect to database when app starts"""
-    await connect_to_mongodb()
-    logging.info("Analytics Service started")
+    logging.info("Starting Analytics Service")
+    try:
+        await connect_to_mongodb()
+        logging.info("MongoDB connection established")
+    except Exception as e:
+        logging.error(f"Failed to connect to MongoDB: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_event():
